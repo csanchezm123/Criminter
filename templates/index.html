@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Criminter</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="logo_section">
+        <img src="{{ url_for('static', filename='img/logo_grande.png') }}" id="logo">
+        <p>Una herramienta web que otorga: <b id="info">Información del usuario</b>, <b id="stats">Estadísticas</b>, <b id="follow">Seguidores y Seguidos</b> y <b id="tweets">Análisis de tweets</b></p>
+{#        <div> Iconos diseñados por <a href="https://www.flaticon.es/autores/catalin-fertu" title="Catalin Fertu"> Catalin Fertu </a> from <a href="https://www.flaticon.es/" title="Flaticon">www.flaticon.es'</a></div>#}
+        <img src="{{ url_for('static', filename='img/separator.png') }}" id="separator">
+    </div>
+    <form action="/search" method="POST">
+        <input type="search" name="username" id="username" placeholder=" @ Nombre de usuario" required><br>
+        <button id="search_button" type="submit">BUSCAR</button>
+    </form>
+</body>
+</html>

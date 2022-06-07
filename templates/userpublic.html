@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Criminter</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='webcomplements/leaflet/leaflet.css') }}" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="{{ url_for('static', filename='webcomplements/leaflet/leaflet.js') }}" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+</head>
+<body>
+
+    <header>
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo">
+      </div>
+      <nav>
+        <a href="{{ url_for('index') }}" id="menu-horizontal"><img src="{{ url_for('static', filename='img/search.png') }}" alt="icono_search"><b> NUEVA BÚSQUEDA</b></a>
+      </nav>
+    </header>
+
+    <div id="sidebar">
+      <nav>
+{#        <a href="https://www.flaticon.es/iconos-gratis/info" title="info iconos">Info iconos creados por Chanut - Flaticon</a>  #}
+        <a href="#info_section" class="menu-vertical" id="info"><img src="{{ url_for('static', filename='img/informacion.png') }}" alt="info_icon">   Información del usuario</a>
+{#        <a href="https://www.flaticon.com/free-icons/graph" title="graph icons">Graph icons created by Bamicon - Flaticon</a>#}
+        <a href="#stats_section" class="menu-vertical" id="stats"><img src="{{ url_for('static', filename='img/statistics.png') }}" alt="stats_icon">   Estadísticas</a>
+{#        <a href="https://www.flaticon.com/free-icons/followers" title="followers icons">Followers icons created by Freepik - Flaticon</a>#}
+        <a href="#follow_section" class="menu-vertical" id="follow"><img src="{{ url_for('static', filename='img/follow.png') }}" alt="follow_icon">   Seguidores y Seguidos</a>
+{#        <a href="https://www.flaticon.com/free-icons/comment" title="comment icons">Comment icons created by Freepik - Flaticon</a>#}
+        <a href="#tweets_section" class="menu-vertical" id="tweets"><img src="{{ url_for('static', filename='img/tweet.png') }}" alt="tweet_icon">   Análisis de Tweets</a>
+      </nav>
+    </div>
+
+    <main>
+      <section id="info_section">
+        <img src="{{ url_for('static', filename='img/info_logo.png') }}" alt="info_logo" class="section_logo">
+        <img src="{{ data[2] }}" alt="banner_image" id="banner_image">
+        <img src="{{ data[1] }}" alt="profile_image" id="profile_image">
+        <div id="info_texto">
+          <p id="username"><b>@ {{ data[0].data.username }}</b></p>
+          <p id="name"><b>Nombre: </b>{{ data[0].data.name }}</p>
+          <p id="profile_id"><b>ID: </b>{{ data[0].data.id }}</p>
+          <p id="created_at"><b>Creado en: </b>{{ data[0].data.created_at }}</p>
+          {% if data[0].data.entities['description'] is defined %}
+            {% if data[0].data.entities['description']['urls'] is defined %}
+              <p id="description"><b>Descripción: </b>{{ data[0].data.description[:data[0].data.entities['description']['urls'][0]['start']] }}<a href="{{ data[0].data.entities['description']['urls'][0]['display_url'] }}">{{ data[0].data.entities['description']['urls'][0]['display_url'] }}</a>{{ data[0].data.description[data[0].data.entities['description']['urls'][0]['end']:] }}</p>
+            {% else %}
+              <p id="description"><b>Descripción: </b>{{ data[0].data.description }}</p>
+            {% endif %}
+          {% else %}
+              <p id="description"><b>Descripción: </b>{{ data[0].data.description }}</p>
+          {% endif %}
+          <p id="location"><b>Localización: </b> {{ data[0].data.location }}</p>
+          <p id="verified"><b>¿Está verificado? </b>{{ data[0].data.verified[0] }} &#{{ data[0].data.verified[1] }}</p>
+          <p id="profile_url"><b>URL: </b><a id="url_element" href="{{ data[0].data.url }}">{{ data[0].data.url }}</a></p>
+        </div>
+      </section>
+
+      <section id="stats_section">
+        <img src="{{ url_for('static', filename='img/stats_logo.png') }}" alt="stats_logo" class="section_logo">
+        <p class="stats_title"><b>ESTADÍSTICAS DEL USUARIO</b></p>
+        <div id="stats_info">
+            <div id="stats_followers"><p>{{ data[0].data.public_metrics['followers_count'] }}<br><b>SEGUIDORES</b></p></div>
+            <div id="stats_following"><p>{{ data[0].data.public_metrics['following_count'] }}<br><b>SEGUIDOS</b></p></div>
+            <div id="stats_tweets"><p>{{ data[0].data.public_metrics['tweet_count'] }}<br><b>TWEETS</b></p></div>
+        </div>
+{#        <a class="export_button" href="/download-page-test.html" download>Exportar a HTML</a>#}
+        <p class="stats_title"><b>ANÁLISIS SEMANAL DE TWEETS</b></p>
+        <p class="stats_subtitle">Basado en {{ data[8] }} de {{ data[0].data.public_metrics['tweet_count'] }} tweets</p>
+        <div id="fig_weekday"></div>
+        <script>
+            var graph = {{ fig_weekday_html | safe }};
+            Plotly.newPlot("fig_weekday", graph, {});
+        </script>
+        <p class="stats_title"><b>ANÁLISIS HORARIO DE TWEETS</b></p>
+        <p class="stats_subtitle">Basado en {{ data[8] }} de {{ data[0].data.public_metrics['tweet_count'] }} tweets</p>
+        <div id="fig_hour"></div>
+        <script>
+            var graph = {{ fig_hour_html | safe }};
+            Plotly.newPlot("fig_hour", graph, {});
+        </script>
+        <p class="stats_title"><b>PORCENTAJE DE TWEETS SEGÚN:</b></p>
+        <p class="stats_subtitle">Basado en {{ data[8] }} de {{ data[0].data.public_metrics['tweet_count'] }} tweets</p>
+        <div id="pie_charts">
+            <p id="percent_source"> - Tipo de fuente - </p>
+            <div id="fig_source"></div>
+            <script>
+                var graph = {{ fig_source_html | safe }};
+                Plotly.newPlot("fig_source", graph, {});
+            </script>
+            <p id="percent_lang"> - Idioma utilizado - </p>
+            <div id="fig_lang"></div>
+            <script>
+                var graph = {{ fig_lang_html | safe }};
+                Plotly.newPlot("fig_lang", graph, {});
+            </script>
+        </div>
+        <p class="stats_title"><b>TWEETS CON GEOLOCALIZACIÓN</b></p>
+        <p class="stats_subtitle">Se han encontrado {{ marcadores_n }} localizaciones</p>
+        <div id="map"></div>
+        <script type="module">
+            var map = L.map('map').setView([32.1456718,-14.6971804], 3);
+            var tiles = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		        maxZoom: 18,
+		        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+			                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		        id: 'mapbox/streets-v11',
+		        tileSize: 512,
+		        zoomOffset: -1
+	        }).addTo(map);
+            var marcadores = {{ marcadores }};
+            for (var i = 0; i < marcadores.length; i++) {
+                var marcador = L.marker([marcadores[i][0], marcadores[i][1]]).addTo(map).bindPopup('<p><b>Latitud: </b>' + marcadores[i][0] + '</p><p><b>Longitud: </b>' + marcadores[i][1] + '</p>').openPopup()
+            }
+        </script>
+      </section>
+
+      <section id="follow_section">
+        <img src="{{ url_for('static', filename='img/follow_logo.png') }}" alt="follow_logo" class="section_logo">
+        <p id="followers_title"><b>SEGUIDORES</b></p>
+        <p class="follow_subtitle">{{ data[4] }} de {{ data[0].data.public_metrics['followers_count'] }} perfiles obtenidos que le siguen</p>
+        <ul>
+          {% if data[4]<=20 %}
+            <div  class=follow_list">
+              {% for User in range(data[4]) %}
+                <section class="follow_element">
+                  <img src="{{ data[3].data[User].profile_image_url }}" alt="follow_image" class="follow_image">
+                  <p class="follow_name"><b>{{ data[3].data[User].name }}</b></p>
+                  <p class="follow_username">@ {{ data[3].data[User].username }}</p>
+                </section>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if data[4]>20 %}
+            <div  class="follow_list">
+              {% for User in range(20) %}
+                <section class="follow_element">
+                  <img src="{{ data[3].data[User].profile_image_url }}" alt="follow_image" class="follow_image">
+                  <p class="follow_name"><b>{{ data[3].data[User].name }}</b></p>
+                  <p class="follow_username">@ {{ data[3].data[User].username }}</p>
+                </section>
+              {% endfor %}
+              <button id="mas_followers"><b>MOSTRAR MÁS SEGUIDORES</b></button>
+            </div>
+            <div class="follow_list" id="extension_followers">
+              {% for User in range(21, data[4]) %}
+                <section class="follow_element">
+                  <img src="{{ data[3].data[User].profile_image_url }}" alt="follow_image" class="follow_image">
+                  <p class="follow_name"><b>{{ data[3].data[User].name }}</b></p>
+                  <p class="follow_username">@ {{ data[3].data[User].username }}</p>
+                </section>
+              {% endfor %}
+              <button id="menos_followers"><b>MOSTRAR MENOS SEGUIDORES</b></button>
+            </div>
+            <script>
+                $(document).ready(function() {
+                    $('#mas_followers').click(function () {
+                        $('#extension_followers').show();
+                        $('#extension_followers').css("display","grid");
+                    });
+                    $('#menos_followers').click(function () {
+                        $('#extension_followers').hide();
+                    });
+                });
+            </script>
+          {% endif %}
+        </ul>
+        <p id="following_title"><b>SEGUIDOS</b></p>
+        <p class="follow_subtitle">{{ data[6] }} de {{ data[0].data.public_metrics['following_count'] }} perfiles seguidos obtenidos</p>
+        <ul>
+          {% if data[6]<=20 %}
+            <div  class="follow_list">
+              {% for User in range(data[6]) %}
+                <section class="follow_element">
+                  <img src="{{ data[5].data[User].profile_image_url }}" alt="follow_image" class="follow_image">
+                  <p class="follow_name"><b>{{ data[5].data[User].name }}</b></p>
+                  <p class="follow_username">@ {{ data[5].data[User].username }}</p>
+                </section>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if data[6]>20 %}
+            <div  class="follow_list">
+              {% for User in range(20) %}
+                <section class="follow_element">
+                  <img src="{{ data[5].data[User].profile_image_url }}" alt="follow_image" class="follow_image">
+                  <p class="follow_name"><b>{{ data[5].data[User].name }}</b></p>
+                  <p class="follow_username">@ {{ data[5].data[User].username }}</p>
+                </section>
+              {% endfor %}
+              <button id="mas_following"><b>MOSTRAR MÁS SEGUIDOS</b></button>
+            </div>
+            <div class="follow_list" id="extension_following">
+              {% for User in range(21, data[6]) %}
+                <section class="follow_element">
+                  <img src="{{ data[5].data[User].profile_image_url }}" alt="follow_image" class="follow_image">
+                  <p class="follow_name"><b>{{ data[5].data[User].name }}</b></p>
+                  <p class="follow_username">@ {{ data[5].data[User].username }}</p>
+                </section>
+              {% endfor %}
+              <button id="menos_following"><b>MOSTRAR MENOS SEGUIDOS</b></button>
+            </div>
+            <script>
+                $(document).ready(function() {
+                    $('#mas_following').click(function () {
+                        $('#extension_following').show();
+                        $('#extension_following').css("display","grid");
+                    });
+                    $('#menos_following').click(function () {
+                        $('#extension_following').hide();
+                    });
+                });
+            </script>
+          {% endif %}
+        </ul>
+
+      </section>
+
+      <section id="tweets_section">
+        <img src="{{ url_for('static', filename='img/tweets_logo.png') }}" alt="tweets_logo" class="section_logo">
+        <p id="tweets_title"><b>TWEETS DEL USUARIO ANALIZADOS</b></p>
+        <p class="tweets_subtitle">{{ data[8] }} de {{ data[0].data.public_metrics['tweet_count'] }} tweets mostrados</p>
+        <div id="tweet_list">
+            {% for Tweet in range(data[8]) %}
+                <section id="tweet_element">
+                    <div id="tweet_info">
+                        <p id="tweet_text"><b>{{ data[7].data[Tweet].text }}</b></p>
+                        <p id="tweet_addinfo">{{ data[7].data[Tweet].created_at }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID: {{ data[7].data[Tweet].id }}</p>
+                    </div>
+                    <div id="tweet_sentiment">
+                        {% if sentiment_normal[Tweet]=="P" %}
+                            <p id="positive"><b>POSITIVO</b></p>
+                        {% endif %}
+                        {% if sentiment_normal[Tweet]=="N" %}
+                            <p id="negative"><b>NEGATIVO</b></p>
+                        {% endif %}
+                        {% if sentiment_normal[Tweet]=="NEU" %}
+                            <p id="neutral"><b>NEUTRO</b></p>
+                        {% endif %}
+                        {% if sentiment_hate[Tweet]=="0" %}
+                            <p id="no_hate"><b>NO ODIO</b></p>
+                        {% endif %}
+                        {% if sentiment_hate[Tweet]=="1" %}
+                            <p id="hate"><b>ODIO</b></p>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endfor %}
+        </div>
+      </section>
+    </main>
+</body>
+</html>

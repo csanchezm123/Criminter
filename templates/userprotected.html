@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Criminter</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard_protected.css') }}">
+</head>
+<body>
+
+    <header>
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo">
+      </div>
+      <nav>
+        <a href="{{ url_for('index') }}" id="menu-horizontal"><img src="{{ url_for('static', filename='img/search.png') }}" alt="icono_search"><b> NUEVA BÚSQUEDA</b></a>
+      </nav>
+    </header>
+
+    <div id="sidebar">
+      <nav>
+{#        <a href="https://www.flaticon.es/iconos-gratis/info" title="info iconos">Info iconos creados por Chanut - Flaticon</a>  #}
+        <a href="#info_section" class="menu-vertical" id="info"><img src="{{ url_for('static', filename='img/informacion.png') }}" alt="info_icon">   Información del usuario</a>
+{#        <a href="https://www.flaticon.com/free-icons/graph" title="graph icons">Graph icons created by Bamicon - Flaticon</a>#}
+        <a href="#stats_section" class="menu-vertical" id="stats"><img src="{{ url_for('static', filename='img/statistics.png') }}" alt="stats_icon">   Estadísticas</a>
+      </nav>
+    </div>
+
+    <main>
+      <section id="info_section">
+        <img src="{{ url_for('static', filename='img/info_logo.png') }}" alt="info_logo" class="section_logo">
+        <img src="{{ data[2] }}" alt="banner_image" id="banner_image">
+        <img src="{{ data[1] }}" alt="profile_image" id="profile_image">
+        <div id="info_texto">
+          <p id="username"><b>@ {{ data[0].data.username }}</b></p>
+          <p id="name"><b>Nombre: </b>{{ data[0].data.name }}</p>
+          <p id="profile_id"><b>ID: </b>{{ data[0].data.id }}</p>
+          <p id="created_at"><b>Creado en: </b>{{ data[0].data.created_at }}</p>
+          {% if data[0].data.entities['description'] is defined %}
+            {% if data[0].data.entities['description']['urls'] is defined %}
+              <p id="description"><b>Descripción: </b>{{ data[0].data.description[:data[0].data.entities['description']['urls'][0]['start']] }}<a href="{{ data[0].data.entities['description']['urls'][0]['display_url'] }}">{{ data[0].data.entities['description']['urls'][0]['display_url'] }}</a>{{ data[0].data.description[data[0].data.entities['description']['urls'][0]['end']:] }}</p>
+            {% else %}
+              <p id="description"><b>Descripción: </b>{{ data[0].data.description }}</p>
+            {% endif %}
+          {% else %}
+              <p id="description"><b>Descripción: </b>{{ data[0].data.description }}</p>
+          {% endif %}
+          <p id="location"><b>Localización: </b> {{ data[0].data.location }}</p>
+          <p id="verified"><b>¿Está verificado? </b>{{ data[0].data.verified[0] }} &#{{ data[0].data.verified[1] }}</p>
+          <p id="profile_url"><b>URL: </b><a id="url_element" href="{{ data[0].data.url }}">{{ data[0].data.url }}</a></p>
+        </div>
+      </section>
+      <section id="stats_section">
+        <img src="{{ url_for('static', filename='img/stats_logo.png') }}" alt="stats_logo" class="section_logo">
+        <p class="stats_title"><b>ESTADÍSTICAS DEL USUARIO</b></p>
+        <div id="stats_info">
+            <div id="stats_followers"><p>{{ data[0].data.public_metrics['followers_count'] }}<br><b>SEGUIDORES</b></p></div>
+            <div id="stats_following"><p>{{ data[0].data.public_metrics['following_count'] }}<br><b>SEGUIDOS</b></p></div>
+            <div id="stats_tweets"><p>{{ data[0].data.public_metrics['tweet_count'] }}<br><b>TWEETS</b></p></div>
+        </div>
+        <p id="info_protected"> NO SE PUEDEN MOSTRAR MÁS DATOS, EL PERFIL ESTÁ PROTEGIDO</p>
+      </section>
+    </main>
+</body>

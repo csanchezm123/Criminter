@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Criminter</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/404.css') }}">
+</head>
+<body>
+
+    <header>
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo">
+      </div>
+      <nav>
+        <a href="{{ url_for('search') }}" id="menu-horizontal"><img src="{{ url_for('static', filename='img/search.png') }}" alt="icono_search"><b> NUEVA BÚSQUEDA</b></a>
+      </nav>
+    </header>
+    <main>
+{#        <a href="https://storyset.com/online">Online illustrations by Storyset</a>#}
+        <img src="{{ url_for('static', filename='img/404.png') }}" alt="404_icon">
+        <p>ERROR 404<br>NO SE HA PODIDO ENCONTRAR ESTE SITIO WEB</p>
+    </main>
+</body>
