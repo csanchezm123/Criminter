@@ -123,7 +123,7 @@
         <p class="follow_subtitle">{{ data[4] }} de {{ data[0].data.public_metrics['followers_count'] }} perfiles obtenidos que le siguen</p>
         <ul>
           {% if data[4]<=20 %}
-            <div  class=follow_list">
+            <div  class="follow_list">
               {% for User in range(data[4]) %}
                 <section class="follow_element">
                   <img src="{{ data[3].data[User].profile_image_url }}" alt="follow_image" class="follow_image">
