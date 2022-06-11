@@ -179,7 +179,7 @@ header {
   grid-area: 2 / 5 / span 1 / span 3;
   font-size: 18px;
   padding-top: 5%;
-  margin-left:-5%;
+  margin-left:-10%;
   overflow: auto;
   white-space: nowrap;
   text-overflow: clip;
