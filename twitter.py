@@ -201,15 +201,20 @@ def obtener_marcadores(data, long):
     i = 0
     #Obtenemos las coordenadas de los tweets que tengan datos de geolocalización
     for Tweet in range(long):
-        if data[7].data[Tweet].geo != None:
+        if data[7].data[Tweet].geo !=None:
             try:
-                marcadores.append([data[7].data[Tweet].geo['coordinates']['coordinates'][1],
-                                   data[7].data[Tweet].geo['coordinates']['coordinates'][0]])
+                marcadores.append([data[7].data[Tweet].geo['coordinates']['coordinates'][1], data[7].data[Tweet].geo['coordinates']['coordinates'][0]])
                 i = i + 1
             except KeyError:
-                i = i
+                try:
+                    place_id = data[7].data[Tweet].geo['place_id']
+                    place = apiv1.geo_id(place_id)
+                    marcadores.append([place.centroid[1], place.centroid[0]])
+                    i = i + 1
+                except:
+                    i = i
         else:
-            otros = otros + 1  # Se cuentan los tweets no geolocalizados
+            otros = otros + 1   #Se cuentan los tweets no geolocalizados
     return marcadores, otros
 
 def cleaned_tweets(data, long):
